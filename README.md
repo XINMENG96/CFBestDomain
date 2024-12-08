@@ -20,7 +20,7 @@ CFBestDomain 是一个自动优化 Cloudflare CDN IP 的工具，旨在提高网
    首先，你需要将仓库克隆到本地：
 
    ```bash
-   git clone https://github.com/your-username/CFBestDomain.git
+   git clone https://github.com/XINMENG96/CFBestDomain.git
    cd CFBestDomain
 安装依赖： 使用 pip 安装项目的依赖：
 
