@@ -65,12 +65,15 @@ def run_cloudflare_st():
         print(f"CloudflareST 可执行文件不存在: {cst_executable}")
         return
 
+    print(f"CloudflareST 可执行文件路径: {cst_executable}")
+
     cst_command = build_cst_command()
 
     if not cst_command:
         print(f"没有配置参数，直接运行: {cst_executable}")
         subprocess.Popen([cst_executable], cwd=cloudflare_st_dir)
     else:
+        print(f"运行命令: {cst_executable} {' '.join(cst_command)}")
         subprocess.Popen([cst_executable] + cst_command, cwd=cloudflare_st_dir)
 
     result_file_path = os.path.join(cloudflare_st_dir, 'result.csv')
