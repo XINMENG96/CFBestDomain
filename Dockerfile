@@ -17,7 +17,7 @@ RUN apk update && apk add --no-cache \
     openssl-dev
 
 # 安装 Python 包
-COPY requirements.txt ./
+COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt -i https://pypi.mirrors.ustc.edu.cn/simple/
 
 # 复制项目文件
@@ -27,4 +27,4 @@ COPY . .
 ENV PYTHONUNBUFFERED=1
 
 # 运行主脚本
-CMD ["python3", "-u", "main.py"]
+ENTRYPOINT ["python3", "main.py"]

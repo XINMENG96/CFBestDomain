@@ -59,12 +59,15 @@ def build_cst_command():
 
 # 运行 CloudflareST
 def run_cloudflare_st():
-    cloudflare_st_dir = os.path.join(get_script_dir(), '..', 'config', 'CloudflareST_windows_amd64') if platform.system() == "Windows" else os.path.join(get_script_dir(), '..', 'config', 'CloudflareST_linux_amd64')
-    cst_executable = os.path.join(cloudflare_st_dir, 'CloudflareST.exe') if platform.system() == "Windows" else os.path.join(cloudflare_st_dir, 'CloudflareST')
+    system = platform.system()
+    cloudflare_st_dir = os.path.join(get_script_dir(), '..', 'config', 'CloudflareST_windows_amd64') if system == "Windows" else os.path.join(get_script_dir(), '..', 'config', 'CloudflareST_linux_amd64')
+    cst_executable = os.path.join(cloudflare_st_dir, 'CloudflareST.exe') if system == "Windows" else os.path.join(cloudflare_st_dir, 'CloudflareST')
 
     if not os.path.exists(cst_executable):
         print(f"CloudflareST 可执行文件不存在: {cst_executable}")
         return
+
+    print(f"CloudflareST 可执行文件路径: {cst_executable}")
 
     cst_command = build_cst_command()
 
@@ -72,6 +75,7 @@ def run_cloudflare_st():
         print(f"没有配置参数，直接运行: {cst_executable}")
         subprocess.Popen([cst_executable], cwd=cloudflare_st_dir)
     else:
+        print(f"运行命令: {cst_executable} {' '.join(cst_command)}")
         subprocess.Popen([cst_executable] + cst_command, cwd=cloudflare_st_dir)
 
     # 检查 result.csv 是否生成
@@ -84,6 +88,7 @@ def run_cloudflare_st():
     print("检测到 result.csv 文件，脚本结束。")
 
 def main():
+    load_env_variables()
     run_cloudflare_st()
 
 if __name__ == "__main__":
