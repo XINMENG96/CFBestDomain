@@ -18,11 +18,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Download and extract CloudflareST
-RUN curl -L -o CloudflareST_linux_amd64.tar.gz https://github.com/XIU2/CloudflareSpeedTest/releases/download/v2.2.5/CloudflareST_linux_amd64.tar.gz \
-    && tar -xzf CloudflareST_linux_amd64.tar.gz -C /app/config/ \
-    && rm CloudflareST_linux_amd64.tar.gz
-
 # Copy the project files
 COPY . .
 

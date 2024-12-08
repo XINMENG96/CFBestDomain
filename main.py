@@ -5,7 +5,7 @@ import time
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
 
-# 加载环境变量
+# Load environment variables
 def load_env_variables():
     env_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config", "app.env")
     if os.path.exists(env_file):
@@ -13,18 +13,18 @@ def load_env_variables():
     else:
         print("Warning: app.env file not found. Using default configuration.")
 
-# 获取任务执行间隔时间（单位：秒）
+# Get task execution interval in seconds
 def get_interval():
     try:
         interval_minutes = os.getenv("INTERVAL_MINUTES", None)
         if interval_minutes is not None:
-            return int(interval_minutes) * 60  # 转换为秒
+            return int(interval_minutes) * 60  # Convert to seconds
         return None
     except ValueError:
         print("Invalid INTERVAL_MINUTES value in .env file. Defaulting to single execution.")
         return None
 
-# 执行子脚本
+# Run a script
 def run_script(script_name):
     try:
         subprocess.check_call([sys.executable, script_name])
@@ -32,7 +32,7 @@ def run_script(script_name):
         print(f"Error running {script_name}: {e}")
         sys.exit(1)
 
-# 主流程
+# Main workflow
 def main():
     print("Starting the workflow...")
 
@@ -65,25 +65,25 @@ def main():
     print("Workflow completed successfully.")
 
 def display_next_run_time(interval):
-    """输出下次运行的时间"""
+    """Output the next run time"""
     next_run_time = datetime.now() + timedelta(seconds=interval)
     print(f"Next run time: {next_run_time.strftime('%Y/%m/%d %H:%M')}")
 
 if __name__ == "__main__":
-    # 加载环境变量
+    # Load environment variables
     load_env_variables()
 
-    # 获取任务间隔时间（秒）
+    # Get task interval in seconds
     interval = get_interval()
 
     if interval:
-        print(f"每{interval // 60}分钟运行一次")
-        # 按间隔时间循环执行任务
+        print(f"Running every {interval // 60} minutes")
+        # Loop to execute the task at intervals
         while True:
             main()
             display_next_run_time(interval)
             print(f"Sleeping for {interval // 60} minutes until the next execution...")
             time.sleep(interval)
     else:
-        print("将只执行一次任务")
+        print("Running a single task")
         main()
