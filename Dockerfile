@@ -1,11 +1,13 @@
-# Using Python 3.9 as the base image
-FROM python:3.9-slim
+# Using Ubuntu as the base image
+FROM ubuntu:20.04
 
 # Set the working directory
 WORKDIR /app
 
 # Install necessary dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
+    python3-pip \
     curl \
     unzip \
     tar \
@@ -16,7 +18,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Install Python packages
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 # Copy the project files
 COPY . .
@@ -25,4 +27,4 @@ COPY . .
 ENV PYTHONUNBUFFERED=1
 
 # Run the main script
-ENTRYPOINT ["python", "main.py"]
+ENTRYPOINT ["python3", "main.py"]
