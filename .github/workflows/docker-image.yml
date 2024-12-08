@@ -23,7 +23,9 @@ jobs:
 
       - name: Extract version from tag
         id: get_version
-        run: echo "::set-output name=version::$(git describe --tags --abbrev=0)"
+        run: |
+          TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "1.0.0")
+          echo "::set-output name=version::$TAG"
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
