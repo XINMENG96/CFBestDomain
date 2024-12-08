@@ -83,17 +83,59 @@ def download_and_extract(url):
 
 def main():
     system = platform.system()
-    arch = platform.architecture()[0]
+    arch = platform.machine()
+
+    print(f"系统类型: {system}, 架构: {arch}")
     
     # 根据系统类型选择下载URL
-    if system == 'Windows' and arch == '64bit':
-        download_url = 'https://github.com/XIU2/CloudflareSpeedTest/releases/download/v2.2.5/CloudflareST_windows_amd64.zip'
-    elif system == 'Linux' and arch == '64bit':
-        download_url = 'https://github.com/XIU2/CloudflareSpeedTest/releases/download/v2.2.5/CloudflareST_linux_amd64.tar.gz'
-    elif system == 'Darwin' and arch == '64bit':
-        download_url = 'https://github.com/XIU2/CloudflareSpeedTest/releases/download/v2.2.5/CloudflareST_darwin_amd64.zip'
+    if system == 'Windows':
+        if arch == 'AMD64':
+            download_url = 'https://github.com/XIU2/CloudflareSpeedTest/releases/download/v2.2.5/CloudflareST_windows_amd64.zip'
+        elif arch == 'x86':
+            download_url = 'https://github.com/XIU2/CloudflareSpeedTest/releases/download/v2.2.5/CloudflareST_windows_386.zip'
+        elif arch == 'ARM64':
+            download_url = 'https://github.com/XIU2/CloudflareSpeedTest/releases/download/v2.2.5/CloudflareST_windows_arm64.zip'
+        else:
+            print(f"不支持的架构: {arch}")
+            return
+    elif system == 'Linux':
+        if arch == 'x86_64':
+            download_url = 'https://github.com/XIU2/CloudflareSpeedTest/releases/download/v2.2.5/CloudflareST_linux_amd64.tar.gz'
+        elif arch == 'x86':
+            download_url = 'https://github.com/XIU2/CloudflareSpeedTest/releases/download/v2.2.5/CloudflareST_linux_386.tar.gz'
+        elif arch == 'aarch64':
+            download_url = 'https://github.com/XIU2/CloudflareSpeedTest/releases/download/v2.2.5/CloudflareST_linux_arm64.tar.gz'
+        elif arch.startswith('arm'):
+            if 'v5' in arch:
+                download_url = 'https://github.com/XIU2/CloudflareSpeedTest/releases/download/v2.2.5/CloudflareST_linux_armv5.tar.gz'
+            elif 'v6' in arch:
+                download_url = 'https://github.com/XIU2/CloudflareSpeedTest/releases/download/v2.2.5/CloudflareST_linux_armv6.tar.gz'
+            elif 'v7' in arch:
+                download_url = 'https://github.com/XIU2/CloudflareSpeedTest/releases/download/v2.2.5/CloudflareST_linux_armv7.tar.gz'
+            else:
+                print(f"不支持的 ARM 架构: {arch}")
+                return
+        elif arch == 'mips':
+            download_url = 'https://github.com/XIU2/CloudflareSpeedTest/releases/download/v2.2.5/CloudflareST_linux_mips.tar.gz'
+        elif arch == 'mips64':
+            download_url = 'https://github.com/XIU2/CloudflareSpeedTest/releases/download/v2.2.5/CloudflareST_linux_mips64.tar.gz'
+        elif arch == 'mips64le':
+            download_url = 'https://github.com/XIU2/CloudflareSpeedTest/releases/download/v2.2.5/CloudflareST_linux_mips64le.tar.gz'
+        elif arch == 'mipsle':
+            download_url = 'https://github.com/XIU2/CloudflareSpeedTest/releases/download/v2.2.5/CloudflareST_linux_mipsle.tar.gz'
+        else:
+            print(f"不支持的架构: {arch}")
+            return
+    elif system == 'Darwin':
+        if arch == 'x86_64':
+            download_url = 'https://github.com/XIU2/CloudflareSpeedTest/releases/download/v2.2.5/CloudflareST_darwin_amd64.zip'
+        elif arch == 'arm64':
+            download_url = 'https://github.com/XIU2/CloudflareSpeedTest/releases/download/v2.2.5/CloudflareST_darwin_arm64.zip'
+        else:
+            print(f"不支持的架构: {arch}")
+            return
     else:
-        print(f"不支持的操作系统或架构: {system} {arch}")
+        print(f"不支持的操作系统: {system}")
         return
 
     download_and_extract(download_url)
