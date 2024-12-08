@@ -46,10 +46,7 @@ def extract_file(zip_filename, folder_name):
 # 下载并解压 CloudflareST
 def download_and_extract(url):
     script_dir = get_script_dir()
-    download_dir = os.path.join(script_dir, '..', 'config')  # 下载位置为 /config
-
-    if not os.path.exists(download_dir):
-        os.makedirs(download_dir)
+    download_dir = script_dir  # 下载位置为脚本目录
 
     zip_filename = os.path.join(download_dir, url.split("/")[-1])
 

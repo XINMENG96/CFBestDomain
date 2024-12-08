@@ -182,7 +182,7 @@ def main():
     load_env_variables()
 
     # 先尝试在脚本目录中查找 result.csv
-    file_path = os.path.join(get_script_dir(), '..', 'config', 'CloudflareST_windows_amd64', 'result.csv')
+    file_path = os.path.join(get_script_dir(), '..', 'CloudflareST_windows_amd64', 'result.csv') if platform.system() == "Windows" else os.path.join(get_script_dir(), 'config', 'CloudflareST_linux_amd64', 'result.csv')
     
     if os.path.exists(file_path):
         print(f"找到文件: {file_path}")

@@ -14,7 +14,7 @@ def is_file_recent(file_path, max_age_minutes=30):
 
 
 def main():
-    csv_path = os.path.join("config", "CloudflareST_windows_amd64", "result.csv")
+    csv_path = os.path.join(get_script_dir(), '..', 'CloudflareST_windows_amd64', 'result.csv') if platform.system() == "Windows" else os.path.join(get_script_dir(), 'config', 'CloudflareST_linux_amd64', 'result.csv')
     if is_file_recent(csv_path):
         print(f"{csv_path} is up-to-date.")
         sys.exit(0)  # Exit with status 0 (indicates success)
