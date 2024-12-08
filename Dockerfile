@@ -1,10 +1,10 @@
-# 使用 Python 3.9 的官方镜像作为基础镜像
+# Using Python 3.9 as the base image
 FROM python:3.9-slim
 
-# 设置工作目录
+# Set the working directory
 WORKDIR /app
 
-# 安装必要的依赖
+# Install necessary dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     unzip \
@@ -14,15 +14,20 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# 安装 Python 包
+# Install Python packages
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 复制项目文件
+# Download and extract CloudflareST
+RUN curl -L -o CloudflareST_linux_amd64.tar.gz https://github.com/XIU2/CloudflareSpeedTest/releases/download/v2.2.5/CloudflareST_linux_amd64.tar.gz \
+    && tar -xzf CloudflareST_linux_amd64.tar.gz -C /app/config/ \
+    && rm CloudflareST_linux_amd64.tar.gz
+
+# Copy the project files
 COPY . .
 
-# 设置环境变量
+# Set the environment variable
 ENV PYTHONUNBUFFERED=1
 
-# 运行主程序
+# Run the main script
 ENTRYPOINT ["python", "main.py"]

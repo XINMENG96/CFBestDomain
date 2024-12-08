@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  cfbestdomain:
+    image: xinmeng96/cfbestdomain:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./config:/app/config
+    environment:
+      - PYTHONUNBUFFERED=1
+    entrypoint: ["python", "main.py"]
