@@ -1,5 +1,4 @@
 import os
-import platform
 import subprocess
 import time
 from dotenv import load_dotenv
@@ -52,13 +51,11 @@ def build_cst_command():
         '-o', cst_o
     ]
 
-    cst_command = [arg for arg in cst_command if arg]
-
-    return cst_command
+    return [arg for arg in cst_command if arg]
 
 def run_cloudflare_st():
     cloudflare_st_dir = os.path.join(get_script_dir(), '..', 'config')
-    cst_executable = os.path.join(cloudflare_st_dir, 'CloudflareST_linux_amd64/CloudflareST')
+    cst_executable = os.path.join(cloudflare_st_dir, 'CloudflareST')
 
     if not os.path.exists(cst_executable):
         print(f"CloudflareST 可执行文件不存在: {cst_executable}")
@@ -67,13 +64,7 @@ def run_cloudflare_st():
     print(f"CloudflareST 可执行文件路径: {cst_executable}")
 
     cst_command = build_cst_command()
-
-    if not cst_command:
-        print(f"没有配置参数，直接运行: {cst_executable}")
-        subprocess.Popen([cst_executable], cwd=cloudflare_st_dir)
-    else:
-        print(f"运行命令: {cst_executable} {' '.join(cst_command)}")
-        subprocess.Popen([cst_executable] + cst_command, cwd=cloudflare_st_dir)
+    subprocess.Popen([cst_executable] + cst_command, cwd=cloudflare_st_dir)
 
     result_file_path = os.path.join(cloudflare_st_dir, 'result.csv')
 
