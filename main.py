@@ -36,8 +36,12 @@ def run_script(script_name):
 def main():
     print("Starting the workflow...")
 
-    # Step 1: Check if result.csv is recent
-    print("Step 1: Checking result.csv...")
+    # Step 1: Run cst_dl.py to download CloudflareST
+    print("Step 1: Downloading CloudflareST...")
+    run_script(os.path.join("app", "cst_dl.py"))
+
+    # Step 2: Check if result.csv is recent
+    print("Step 2: Checking result.csv...")
     check_csv_script = os.path.join("app", "check_csv.py")
     try:
         subprocess.check_call([sys.executable, check_csv_script])
@@ -45,10 +49,6 @@ def main():
         return  # Exit if CSV is recent
     except subprocess.CalledProcessError:
         print("result.csv is outdated. Proceeding with workflow...")
-
-    # Step 2: Download CloudflareST
-    print("Step 2: Downloading CloudflareST...")
-    run_script(os.path.join("app", "cst_dl.py"))
 
     # Step 3: Generate app.env if it doesn't exist
     print("Step 3: Generating app.env...")

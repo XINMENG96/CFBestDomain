@@ -47,23 +47,39 @@ CFBestDomain 是一个自动优化 Cloudflare CDN IP 的工具，旨在提高网
 
    默认情况下，项目会执行一次。如果你设置了定时任务，它将根据配置的间隔时间进行循环执行。
 
+## 使用 Docker
+
+你也可以使用 Docker 来运行该项目。以下是使用 Docker 的步骤：
+
+1. **构建 Docker 镜像**：
+
+   ```bash
+   docker build -t cfbestdomain .
+   ```
+
+2. **运行 Docker 容器**：
+
+   ```bash
+   docker run -d --name cfbestdomain -v $(pwd)/config:/app/config cfbestdomain
+   ```
+
+   这将启动一个 Docker 容器，并将本地的 `config` 目录挂载到容器内的 `/app/config` 目录。
+
 ## 目录结构
 
-```bash
+```
 CFBestDomain/
-│
-├── app/                 # 存放所有脚本的目录
-│   ├── check_csv.py     # 检查 CSV 文件是否最新
-│   ├── cst_dl.py        # 下载并解压 CloudflareST
-│   ├── gen_env.py       # 生成 app.env 配置文件
-│   ├── cst_run.py       # 运行 CloudflareST
-│   ├── dns_refresh.py   # 更新 DNS 记录
-│
-├── config/              # 配置文件目录
-│   ├── app.env          # 环境变量配置文件
-│
-├── requirements.txt     # 项目依赖
-└── main.py              # 主脚本，启动项目流程
+├── config/               # 配置文件目录
+│   └── config.yaml       # 配置文件示例
+├── scripts/              # 脚本目录
+│   └── update_ip.py      # 更新 IP 的脚本
+├── tests/                # 测试目录
+│   └── test_main.py      # 主脚本的测试文件
+├── .env                  # 环境变量配置文件
+├── Dockerfile            # Docker 配置文件
+├── README.md             # 项目说明文件
+├── main.py               # 主脚本文件
+└── requirements.txt      # 依赖包列表
 ```
 
 ## 环境要求
