@@ -1,22 +1,24 @@
-# 使用 Python 3.9 的官方镜像作为基础镜像
-FROM python:3.9-slim
+# 使用 Python 3.9 的官方 Alpine 镜像作为基础镜像
+FROM python:3.9-alpine
+
+# 设置作者信息
+LABEL authors="qetesh"
 
 # 设置工作目录
 WORKDIR /app
 
 # 安装必要的依赖
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apk update && apk add --no-cache \
     curl \
     unzip \
     tar \
-    build-essential \
+    build-base \
     libffi-dev \
-    libssl-dev \
-    && rm -rf /var/lib/apt/lists/*
+    openssl-dev
 
 # 安装 Python 包
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.txt ./
+RUN pip3 install --no-cache-dir -r requirements.txt -i https://pypi.mirrors.ustc.edu.cn/simple/
 
 # 复制项目文件
 COPY . .
@@ -25,4 +27,4 @@ COPY . .
 ENV PYTHONUNBUFFERED=1
 
 # 运行主脚本
-ENTRYPOINT ["python", "main.py"]
+CMD ["python3", "-u", "main.py"]
