@@ -11,7 +11,10 @@ RUN apk update && apk add --no-cache \
     unzip \
     tar \
     python3 \
-    py3-pip
+    py3-pip \
+    build-base \
+    libffi-dev \
+    openssl-dev
 
 # 安装 Python 包
 COPY requirements.txt .
