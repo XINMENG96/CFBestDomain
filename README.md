@@ -2,6 +2,8 @@
 
 CFBestDomain 是一个自动优化 Cloudflare CDN IP 的工具，旨在提高网站访问速度和稳定性。该工具通过实时获取最佳的 Cloudflare CDN IP，并使用 DNS 解析技术生成优化后的域名，帮助用户实现更快的加载速度和更低的延迟。
 
+该项目使用 [CloudflareSpeedTest](https://github.com/XIU2/CloudflareSpeedTest) 项目来进行IP测速。
+
 ## 主要功能
 
 - **自动优化 Cloudflare CDN IP**：根据网络状况自动选择最快的 Cloudflare CDN IP。
