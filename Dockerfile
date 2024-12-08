@@ -18,7 +18,7 @@ RUN apk update && apk add --no-cache \
 
 # 安装 Python 包
 COPY requirements.txt .
-RUN pip3 install --no-cache-dir -r requirements.txt || { cat /root/.cache/pip/log/debug.log; exit 1; }
+RUN pip3 install --no-cache-dir -r requirements.txt --break-system-packages
 
 # 第二阶段：复制代码并执行
 FROM base as builder
