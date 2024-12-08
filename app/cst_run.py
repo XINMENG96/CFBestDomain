@@ -59,7 +59,7 @@ def build_cst_command():
 
 # 运行 CloudflareST
 def run_cloudflare_st():
-    cloudflare_st_dir = os.path.join(get_script_dir(), '..', 'CloudflareST_windows_amd64') if platform.system() == "Windows" else os.path.join(get_script_dir(), 'config', 'CloudflareST_linux_amd64')
+    cloudflare_st_dir = os.path.join(get_script_dir(), 'CloudflareST_windows_amd64') if platform.system() == "Windows" else os.path.join(get_script_dir(), 'config', 'CloudflareST_linux_amd64')
     cst_executable = os.path.join(cloudflare_st_dir, 'CloudflareST.exe') if platform.system() == "Windows" else os.path.join(cloudflare_st_dir, 'CloudflareST')
 
     if not os.path.exists(cst_executable):
