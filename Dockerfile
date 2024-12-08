@@ -35,7 +35,7 @@ ENTRYPOINT ["python", "main.py"]
 FROM builder as downloader
 
 # 设置工作目录
-WORKDIR /app/config
+WORKDIR /app
 
 # 下载并解压 CloudflareST
 RUN python app/cst_dl.py
