@@ -55,7 +55,7 @@ def build_cst_command():
 
 def run_cloudflare_st():
     cloudflare_st_dir = os.path.join(get_script_dir(), '..', 'config')
-    cst_executable = os.path.join(cloudflare_st_dir, 'CloudflareST')
+    cst_executable = os.path.join(cloudflare_st_dir, 'CloudflareST_linux_amd64/CloudflareST')
 
     if not os.path.exists(cst_executable):
         print(f"CloudflareST 可执行文件不存在: {cst_executable}")
