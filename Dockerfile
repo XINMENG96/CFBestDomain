@@ -1,13 +1,11 @@
-# 使用 Ubuntu 作为基础镜像
-FROM ubuntu:20.04
+# 使用 Python 3.9 的官方镜像作为基础镜像
+FROM python:3.9-slim
 
 # 设置工作目录
 WORKDIR /app
 
 # 安装必要的依赖
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3 \
-    python3-pip \
     curl \
     unzip \
     tar \
@@ -18,7 +16,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # 安装 Python 包
 COPY requirements.txt .
-RUN pip3 install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # 复制项目文件
 COPY . .
@@ -27,4 +25,4 @@ COPY . .
 ENV PYTHONUNBUFFERED=1
 
 # 运行主脚本
-ENTRYPOINT ["python3", "main.py"]
+ENTRYPOINT ["python", "main.py"]
