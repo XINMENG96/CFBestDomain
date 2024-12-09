@@ -3,7 +3,7 @@ import os
 import platform
 import requests
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
 # 获取脚本目录并指定历史记录文件的路径
@@ -107,13 +107,13 @@ def update_dns_records(csv_ips):
         # 获取当前所有 'cdn1.decastar.us.kg' 的 IP 地址
         current_ips = [record['content'] for record in dns_records if record['name'] == os.getenv('record_name')]
 
-        # 删除现有记录中不在 CSV 中的 IP 地址，且解析时间超过 7 天
+        # 删除现有记录中不在 CSV 中的 IP 地址，且解析时间超过 3 天
         for ip in current_ips:
             if ip not in csv_ips:
                 # 从历史记录中获取解析时间
                 last_updated = get_last_updated(ip)
-                if last_updated and (datetime.now() - last_updated).days >= 7:
-                    print(f"删除当前 DNS 记录 IP: {ip}，因为它不在 CSV 中的有效 IP 列表中且已经解析超过 7 天")
+                if last_updated and (datetime.now() - last_updated).days >= 3:
+                    print(f"删除当前 DNS 记录 IP: {ip}，因为它不在 CSV 中的有效 IP 列表中且已经解析超过 3 天")
                     record_id = next(record['id'] for record in dns_records if record['content'] == ip)
                     delete_dns_record(record_id)
 
@@ -123,6 +123,14 @@ def update_dns_records(csv_ips):
                 print(f"添加新的 DNS 记录: {ip}")
                 create_dns_record(ip)
                 update_history(ip)
+
+        # 检查当前解析的 IP 数量是否超过 10 个，超过则从旧的开始删除
+        if len(current_ips) > 10:
+            sorted_ips = sorted(current_ips, key=get_last_updated)
+            for ip in sorted_ips[:-10]:
+                print(f"删除旧的 DNS 记录 IP: {ip}，已解析 IP 数量超过 10 个")
+                record_id = next(record['id'] for record in dns_records if record['content'] == ip)
+                delete_dns_record(record_id)
 
 # 获取 Cloudflare DNS 记录
 def get_dns_records():
