@@ -1,5 +1,6 @@
 import csv
 import os
+import platform
 import requests
 import time
 from datetime import datetime
@@ -177,14 +178,55 @@ def create_dns_record(ip):
     else:
         print(f"创建 DNS 记录失败: {response.text}")
 
+# 获取 CloudflareST 结果文件的路径
+def get_result_csv_path():
+    system = platform.system()
+    arch = platform.machine()
+    
+    if system == 'Windows':
+        if arch == 'AMD64':
+            return os.path.join(get_script_dir(), 'CloudflareST_windows_amd64', 'result.csv')
+        elif arch == 'x86':
+            return os.path.join(get_script_dir(), 'CloudflareST_windows_386', 'result.csv')
+        elif arch == 'ARM64':
+            return os.path.join(get_script_dir(), 'CloudflareST_windows_arm64', 'result.csv')
+    elif system == 'Linux':
+        if arch == 'x86_64':
+            return os.path.join(get_script_dir(), 'CloudflareST_linux_amd64', 'result.csv')
+        elif arch == 'x86':
+            return os.path.join(get_script_dir(), 'CloudflareST_linux_386', 'result.csv')
+        elif arch == 'aarch64':
+            return os.path.join(get_script_dir(), 'CloudflareST_linux_arm64', 'result.csv')
+        elif arch.startswith('arm'):
+            if 'v5' in arch:
+                return os.path.join(get_script_dir(), 'CloudflareST_linux_armv5', 'result.csv')
+            elif 'v6' in arch:
+                return os.path.join(get_script_dir(), 'CloudflareST_linux_armv6', 'result.csv')
+            elif 'v7' in arch:
+                return os.path.join(get_script_dir(), 'CloudflareST_linux_armv7', 'result.csv')
+        elif arch == 'mips':
+            return os.path.join(get_script_dir(), 'CloudflareST_linux_mips', 'result.csv')
+        elif arch == 'mips64':
+            return os.path.join(get_script_dir(), 'CloudflareST_linux_mips64', 'result.csv')
+        elif arch == 'mips64le':
+            return os.path.join(get_script_dir(), 'CloudflareST_linux_mips64le', 'result.csv')
+        elif arch == 'mipsle':
+            return os.path.join(get_script_dir(), 'CloudflareST_linux_mipsle', 'result.csv')
+    elif system == 'Darwin':
+        if arch == 'x86_64':
+            return os.path.join(get_script_dir(), 'CloudflareST_darwin_amd64', 'result.csv')
+        elif arch == 'arm64':
+            return os.path.join(get_script_dir(), 'CloudflareST_darwin_arm64', 'result.csv')
+    return None
+
 def main():
     # 加载环境变量
     load_env_variables()
 
-    # 先尝试在脚本目录中查找 result.csv
-    file_path = os.path.join(get_script_dir(), '..', 'config', 'CloudflareST_windows_amd64', 'result.csv')
+    # 获取 result.csv 文件路径
+    file_path = get_result_csv_path()
     
-    if os.path.exists(file_path):
+    if file_path and os.path.exists(file_path):
         print(f"找到文件: {file_path}")
         process_csv(file_path)
     else:
