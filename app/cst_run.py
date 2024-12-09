@@ -16,45 +16,46 @@ def load_env_variables():
 
 # 根据配置构建 CloudflareST 的命令行参数
 def build_cst_command():
-    cst_n = os.getenv('cst_n', '200')  # 延迟测速线程
-    cst_t = os.getenv('cst_t', '4')    # 延迟测速次数
-    cst_dn = os.getenv('cst_dn', '10')  # 下载测速数量
-    cst_dt = os.getenv('cst_dt', '10')  # 下载测速时间
-    cst_tp = os.getenv('cst_tp', '443')  # 测速端口
-    cst_url = os.getenv('cst_url', 'https://cf.xiu2.xyz/url')  # 测速地址
-    cst_httping = os.getenv('cst_httping', 'True')  # 是否使用 HTTPing 模式
-    cst_httping_code = os.getenv('cst_httping_code', '200')  # HTTPing 有效状态码
-    cst_cfcolo = os.getenv('cst_cfcolo', '')  # 匹配指定地区
-    cst_tl = os.getenv('cst_tl', '200')  # 平均延迟上限
-    cst_tll = os.getenv('cst_tll', '40')  # 平均延迟下限
-    cst_tlr = os.getenv('cst_tlr', '0.2')  # 丢包几率上限
-    cst_sl = os.getenv('cst_sl', '5')  # 下载速度下限
-    cst_p = os.getenv('cst_p', '10')  # 显示结果数量
-    cst_f = os.getenv('cst_f', 'ip.txt')  # IP段数据文件
-    cst_o = os.getenv('cst_o', 'result.csv')  # 写入结果文件
+    cst_n = os.getenv('cst_n')
+    cst_t = os.getenv('cst_t')
+    cst_dn = os.getenv('cst_dn')
+    cst_dt = os.getenv('cst_dt')
+    cst_tp = os.getenv('cst_tp')
+    cst_url = os.getenv('cst_url')
+    cst_httping = os.getenv('cst_httping')
+    cst_httping_code = os.getenv('cst_httping_code')
+    cst_cfcolo = os.getenv('cst_cfcolo')
+    cst_tl = os.getenv('cst_tl')
+    cst_tll = os.getenv('cst_tll')
+    cst_tlr = os.getenv('cst_tlr')
+    cst_sl = os.getenv('cst_sl')
+    cst_p = os.getenv('cst_p')
+    cst_f = os.getenv('cst_f')
+    cst_o = os.getenv('cst_o')
 
-    cst_command = [
-        'CloudflareST',  # 假设 CloudflareST 已经解压
-        '-n', cst_n,
-        '-t', cst_t,
-        '-dn', cst_dn,
-        '-dt', cst_dt,
-        '-tp', cst_tp,
-        '-url', cst_url,
-        '-httping' if cst_httping == 'True' else '',
-        '-httping-code', cst_httping_code,
-        '-cfcolo', cst_cfcolo,
-        '-tl', cst_tl,
-        '-tll', cst_tll,
-        '-tlr', cst_tlr,
-        '-sl', cst_sl,
-        '-p', cst_p,
-        '-f', cst_f,
-        '-o', cst_o
-    ]
-    
-    cst_command = [arg for arg in cst_command if arg]
-    
+    cst_command = ['CloudflareST']
+
+    if cst_n: cst_command.extend(['-n', cst_n])
+    if cst_t: cst_command.extend(['-t', cst_t])
+    if cst_dn: cst_command.extend(['-dn', cst_dn])
+    if cst_dt: cst_command.extend(['-dt', cst_dt])
+    if cst_tp: cst_command.extend(['-tp', cst_tp])
+    if cst_url: cst_command.extend(['-url', cst_url])
+    if cst_httping == 'True': cst_command.append('-httping')
+    if cst_httping_code: cst_command.extend(['-httping-code', cst_httping_code])
+    if cst_cfcolo: cst_command.extend(['-cfcolo', cst_cfcolo])
+    if cst_tl: cst_command.extend(['-tl', cst_tl])
+    if cst_tll: cst_command.extend(['-tll', cst_tll])
+    if cst_tlr: cst_command.extend(['-tlr', cst_tlr])
+    if cst_sl: cst_command.extend(['-sl', cst_sl])
+    if cst_p: cst_command.extend(['-p', cst_p])
+    if cst_f: cst_command.extend(['-f', cst_f])
+    if cst_o: cst_command.extend(['-o', cst_o])
+
+    # Remove the first element if it's the only one, which means no parameters are set
+    if len(cst_command) == 1:
+        cst_command = []
+
     return cst_command
 
 # 运行 CloudflareST
@@ -123,7 +124,7 @@ def run_cloudflare_st():
 
     cst_command = build_cst_command()
 
-    if len(cst_command) == 1:
+    if not cst_command:
         print(f"没有配置参数，直接运行: {cst_executable}")
         subprocess.Popen([cst_executable], cwd=cloudflare_st_dir)
     else:
@@ -141,5 +142,5 @@ def main():
     load_env_variables()
     run_cloudflare_st()
 
-if __name__ == "__main__":
+if __name__ == "__main__": 
     main()
