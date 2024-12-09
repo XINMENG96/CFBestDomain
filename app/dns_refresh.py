@@ -252,6 +252,9 @@ def main():
     if file_path and os.path.exists(file_path):
         print(f"找到文件: {file_path}")
         process_csv(file_path)
+        # 删除 result.csv 文件以避免对循环执行造成影响
+        os.remove(file_path)
+        print("result.csv 文件已删除")
     else:
         print("未找到 result.csv 文件，请确保 CloudflareSpeedTest 正常运行")
 

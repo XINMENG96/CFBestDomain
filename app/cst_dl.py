@@ -10,14 +10,46 @@ def get_script_dir():
     return os.path.dirname(os.path.abspath(__file__))
 
 # Function to check if the file or folder already exists
-def check_existing_files(download_dir, zip_filename):
-    folder_name = os.path.splitext(zip_filename)[0]
-    if os.path.exists(folder_name):
+def check_existing_files(system, arch, download_dir):
+    folder_name = None
+    if system == 'Windows':
+        if arch == 'AMD64':
+            folder_name = 'CloudflareST_windows_amd64'
+        elif arch == 'x86':
+            folder_name = 'CloudflareST_windows_386'
+        elif arch == 'ARM64':
+            folder_name = 'CloudflareST_windows_arm64'
+    elif system == 'Linux':
+        if arch == 'x86_64':
+            folder_name = 'CloudflareST_linux_amd64'
+        elif arch == 'x86':
+            folder_name = 'CloudflareST_linux_386'
+        elif arch == 'aarch64':
+            folder_name = 'CloudflareST_linux_arm64'
+        elif arch.startswith('arm'):
+            if 'v5' in arch:
+                folder_name = 'CloudflareST_linux_armv5'
+            elif 'v6' in arch:
+                folder_name = 'CloudflareST_linux_armv6'
+            elif 'v7' in arch:
+                folder_name = 'CloudflareST_linux_armv7'
+        elif arch == 'mips':
+            folder_name = 'CloudflareST_linux_mips'
+        elif arch == 'mips64':
+            folder_name = 'CloudflareST_linux_mips64'
+        elif arch == 'mips64le':
+            folder_name = 'CloudflareST_linux_mips64le'
+        elif arch == 'mipsle':
+            folder_name = 'CloudflareST_linux_mipsle'
+    elif system == 'Darwin':
+        if arch == 'x86_64':
+            folder_name = 'CloudflareST_darwin_amd64'
+        elif arch == 'arm64':
+            folder_name = 'CloudflareST_darwin_arm64'
+
+    if folder_name and os.path.exists(os.path.join(download_dir, folder_name)):
         print(f"解压文件夹已存在: {folder_name}，跳过解压")
         return True
-    if os.path.exists(zip_filename):
-        print(f"压缩包已存在: {zip_filename}，跳过下载")
-        return False
     return False
 
 # 解压文件的函数，处理zip和tar.gz
@@ -48,11 +80,17 @@ def extract_file(zip_filename, folder_name):
 def download_and_extract(url):
     script_dir = get_script_dir()
     download_dir = script_dir  # 下载位置为脚本目录
+    system = platform.system()
+    arch = platform.machine()
+
+    if check_existing_files(system, arch, download_dir):
+        return  # 如果文件夹已经存在，则跳过下载
 
     zip_filename = os.path.join(download_dir, url.split("/")[-1])
 
-    if check_existing_files(download_dir, zip_filename):
-        return  # 如果文件夹或压缩包已存在，则跳过下载
+    if os.path.exists(zip_filename):
+        print(f"压缩包已存在: {zip_filename}，跳过下载")
+        return  # 如果压缩包已存在，则跳过下载
 
     print(f"开始下载: {url}")
     response = requests.get(url, stream=True)
