@@ -61,7 +61,11 @@ def download_and_extract(url):
                 f.write(chunk)
         print(f"下载完成: {zip_filename}")
 
-        folder_name = os.path.splitext(zip_filename)[0]
+        # Remove any extensions like .zip, .tar, .gz from the folder name
+        folder_name = zip_filename
+        for ext in [".zip", ".tar", ".gz"]:
+            folder_name = folder_name.replace(ext, "")
+        
         if not os.path.exists(folder_name):
             os.makedirs(folder_name)
 
