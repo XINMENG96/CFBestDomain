@@ -18,7 +18,9 @@ def get_interval():
     try:
         interval_minutes = os.getenv("INTERVAL_MINUTES", None)
         if interval_minutes is not None:
-            return int(interval_minutes) * 60  # 转换为秒
+            interval = int(interval_minutes) * 60  # 转换为秒
+            print(f"任务间隔时间（秒）: {interval}")  # Debugging
+            return interval
         return None
     except ValueError:
         print("Invalid INTERVAL_MINUTES value in .env file. Defaulting to single execution.")

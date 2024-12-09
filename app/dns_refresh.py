@@ -126,7 +126,7 @@ def update_dns_records(csv_ips):
 
         # 检查当前解析的 IP 数量是否超过 10 个，超过则从旧的开始删除
         if len(current_ips) > 10:
-            sorted_ips = sorted(current_ips, key=get_last_updated)
+            sorted_ips = sorted(current_ips, key=lambda ip: get_last_updated(ip) or datetime.min)
             for ip in sorted_ips[:-10]:
                 print(f"删除旧的 DNS 记录 IP: {ip}，已解析 IP 数量超过 10 个")
                 record_id = next(record['id'] for record in dns_records if record['content'] == ip)
