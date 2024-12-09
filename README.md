@@ -65,6 +65,50 @@ CFBestDomain 是一个自动优化 Cloudflare CDN IP 的工具，旨在提高网
 
    这将启动一个 Docker 容器，并将本地的 `config` 目录挂载到容器内的 `/app/config` 目录。
 
+3. **使用编译好的 Docker 镜像**：
+
+   你也可以使用已经编译好的 Docker 镜像来运行该项目：
+
+   ```bash
+   docker run -d \
+     --name cfbestdomain \
+     -v ./config:/app/config \
+     -e PYTHONUNBUFFERED=1 \
+     xinmeng96/cfbestdomain:latest \
+     python main.py
+   ```
+
+## 使用 Docker Compose
+
+你也可以使用 Docker Compose 来管理和运行该项目。以下是使用 Docker Compose 的步骤：
+
+1. **创建 `docker-compose.yml` 文件**：
+
+   在项目根目录下创建一个 `docker-compose.yml` 文件，并添加以下内容：
+
+   ```yaml
+   version: '3'
+   services:
+     cfbestdomain:
+       build: .
+       volumes:
+         - ./config:/app/config
+       environment:
+         - INTERVAL_MINUTES=120
+   ```
+
+   你也可以参考 [docker-compose.yml 示例](https://github.com/XINMENG96/CFBestDomain/blob/main/docker-compose.yml)。
+
+2. **启动服务**：
+
+   使用以下命令启动 Docker Compose 服务：
+
+   ```bash
+   docker-compose up -d
+   ```
+
+   这将构建并启动服务，并根据 `docker-compose.yml` 文件中的配置进行设置。
+
 ## 目录结构
 
 ```
