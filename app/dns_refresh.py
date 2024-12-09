@@ -5,6 +5,8 @@ import requests
 import time
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
 
 # 获取脚本目录并指定历史记录文件的路径
 def get_script_dir():
@@ -30,6 +32,15 @@ def get_dns_record_id():
         return None
     return dns_record_id
 
+# 创建一个带有重试机制的 requests 会话
+def create_session_with_retries():
+    session = requests.Session()
+    retries = Retry(total=5, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504])
+    adapter = HTTPAdapter(max_retries=retries)
+    session.mount('http://', adapter)
+    session.mount('https://', adapter)
+    return session
+
 # 更新 DNS 记录
 def update_dns_record(ip):
     dns_record_id = get_dns_record_id()
@@ -47,7 +58,8 @@ def update_dns_record(ip):
             'ttl': 120,
             'proxied': False
         }
-        response = requests.put(url, json=data, headers=headers)
+        session = create_session_with_retries()
+        response = session.put(url, json=data, headers=headers)
         if response.status_code == 200:
             print(f"DNS 记录更新成功: {ip}")
         else:
@@ -144,7 +156,8 @@ def get_dns_records():
         'X-Auth-Key': os.getenv('api_key'),
         'Content-Type': 'application/json'
     }
-    response = requests.get(url, headers=headers)
+    session = create_session_with_retries()
+    response = session.get(url, headers=headers)
     if response.status_code == 200:
         return response.json()['result']
     else:
@@ -159,7 +172,8 @@ def delete_dns_record(record_id):
         'X-Auth-Key': os.getenv('api_key'),
         'Content-Type': 'application/json'
     }
-    response = requests.delete(url, headers=headers)
+    session = create_session_with_retries()
+    response = session.delete(url, headers=headers)
     if response.status_code == 200:
         print(f"DNS 记录删除成功")
     else:
@@ -180,7 +194,8 @@ def create_dns_record(ip):
         'ttl': 120,
         'proxied': False
     }
-    response = requests.post(url, json=data, headers=headers)
+    session = create_session_with_retries()
+    response = session.post(url, json=data, headers=headers)
     if response.status_code == 200:
         print(f"DNS 记录创建成功: {ip}")
     else:
