@@ -59,8 +59,63 @@ def build_cst_command():
 
 # 运行 CloudflareST
 def run_cloudflare_st():
-    cloudflare_st_dir = os.path.join(get_script_dir(), '..', 'config', 'CloudflareST_windows_amd64')
-    cst_executable = os.path.join(cloudflare_st_dir, 'CloudflareST.exe') if platform.system() == "Windows" else os.path.join(cloudflare_st_dir, 'CloudflareST')
+    system = platform.system()
+    arch = platform.machine()
+    
+    if system == 'Windows':
+        if arch == 'AMD64':
+            cloudflare_st_dir = os.path.join(get_script_dir(), 'CloudflareST_windows_amd64')
+            cst_executable = os.path.join(cloudflare_st_dir, 'CloudflareST.exe')
+        elif arch == 'x86':
+            cloudflare_st_dir = os.path.join(get_script_dir(), 'CloudflareST_windows_386')
+            cst_executable = os.path.join(cloudflare_st_dir, 'CloudflareST.exe')
+        elif arch == 'ARM64':
+            cloudflare_st_dir = os.path.join(get_script_dir(), 'CloudflareST_windows_arm64')
+            cst_executable = os.path.join(cloudflare_st_dir, 'CloudflareST.exe')
+        else:
+            print(f"不支持的架构: {arch}")
+            return
+    elif system == 'Linux':
+        if arch == 'x86_64':
+            cloudflare_st_dir = os.path.join(get_script_dir(), 'CloudflareST_linux_amd64')
+        elif arch == 'x86':
+            cloudflare_st_dir = os.path.join(get_script_dir(), 'CloudflareST_linux_386')
+        elif arch == 'aarch64':
+            cloudflare_st_dir = os.path.join(get_script_dir(), 'CloudflareST_linux_arm64')
+        elif arch.startswith('arm'):
+            if 'v5' in arch:
+                cloudflare_st_dir = os.path.join(get_script_dir(), 'CloudflareST_linux_armv5')
+            elif 'v6' in arch:
+                cloudflare_st_dir = os.path.join(get_script_dir(), 'CloudflareST_linux_armv6')
+            elif 'v7' in arch:
+                cloudflare_st_dir = os.path.join(get_script_dir(), 'CloudflareST_linux_armv7')
+            else:
+                print(f"不支持的 ARM 架构: {arch}")
+                return
+        elif arch == 'mips':
+            cloudflare_st_dir = os.path.join(get_script_dir(), 'CloudflareST_linux_mips')
+        elif arch == 'mips64':
+            cloudflare_st_dir = os.path.join(get_script_dir(), 'CloudflareST_linux_mips64')
+        elif arch == 'mips64le':
+            cloudflare_st_dir = os.path.join(get_script_dir(), 'CloudflareST_linux_mips64le')
+        elif arch == 'mipsle':
+            cloudflare_st_dir = os.path.join(get_script_dir(), 'CloudflareST_linux_mipsle')
+        else:
+            print(f"不支持的架构: {arch}")
+            return
+        cst_executable = os.path.join(cloudflare_st_dir, 'CloudflareST')
+    elif system == 'Darwin':
+        if arch == 'x86_64':
+            cloudflare_st_dir = os.path.join(get_script_dir(), 'CloudflareST_darwin_amd64')
+        elif arch == 'arm64':
+            cloudflare_st_dir = os.path.join(get_script_dir(), 'CloudflareST_darwin_arm64')
+        else:
+            print(f"不支持的架构: {arch}")
+            return
+        cst_executable = os.path.join(cloudflare_st_dir, 'CloudflareST')
+    else:
+        print(f"不支持的操作系统: {system}")
+        return
 
     if not os.path.exists(cst_executable):
         print(f"CloudflareST 可执行文件不存在: {cst_executable}")
@@ -68,22 +123,22 @@ def run_cloudflare_st():
 
     cst_command = build_cst_command()
 
-    if not cst_command:
+    if len(cst_command) == 1:
         print(f"没有配置参数，直接运行: {cst_executable}")
         subprocess.Popen([cst_executable], cwd=cloudflare_st_dir)
     else:
-        subprocess.Popen([cst_executable] + cst_command, cwd=cloudflare_st_dir)
+        subprocess.Popen([cst_executable] + cst_command[1:], cwd=cloudflare_st_dir)
 
     # 检查 result.csv 是否生成
     result_file_path = os.path.join(cloudflare_st_dir, 'result.csv')
 
     while not os.path.exists(result_file_path):
-        print("等待 result.csv 文件生成...")
         time.sleep(2)  # 每隔2秒检查一次
 
     print("检测到 result.csv 文件，脚本结束。")
 
 def main():
+    load_env_variables()
     run_cloudflare_st()
 
 if __name__ == "__main__":
