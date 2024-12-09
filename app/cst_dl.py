@@ -4,6 +4,7 @@ import requests
 import zipfile
 import tarfile
 import shutil
+from dotenv import load_dotenv
 
 def get_script_dir():
     return os.path.dirname(os.path.abspath(__file__))
@@ -83,8 +84,10 @@ def download_and_extract(url):
         print(f"下载失败，HTTP 状态码: {response.status_code}")
 
 def main():
+    load_dotenv(os.path.join(get_script_dir(), '..', 'config', 'app.env'))
     system = platform.system()
     arch = platform.machine()
+    proxy = os.getenv('GITHUB_PROXY', '')
 
     print(f"系统类型: {system}, 架构: {arch}")
     
@@ -138,6 +141,9 @@ def main():
     else:
         print(f"不支持的操作系统: {system}")
         return
+
+    if proxy:
+        download_url = f"{proxy}/{download_url}"
 
     download_and_extract(download_url)
 

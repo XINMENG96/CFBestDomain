@@ -21,6 +21,9 @@ def create_default_env(env_file):
 # 下载速度阈值，只有下载速度大于等于此值的 IP 会被更新到 DNS
 # cst_download_speed_threshold=10
 
+# Github代理地址
+# GITHUB_PROXY=github.proxy.com
+
 # CloudflareSpeedTest 配置
 # 延迟测速线程
 # cst_n=200           
