@@ -22,7 +22,7 @@ def create_default_env(env_file):
 # cst_download_speed_threshold=10
 
 # Github代理地址
-# GITHUB_PROXY=github.proxy.com
+# GITHUB_PROXY=https://github.proxy.com
 
 # CloudflareSpeedTest 配置
 # 延迟测速线程
