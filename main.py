@@ -58,11 +58,10 @@ def main():
     print("Step 4: Running CloudflareST...")
     run_script(os.path.join("app", "cst_run.py"))
 
-    # Step 5: Update DNS records
-    print("Step 5: Updating DNS records...")
-    run_script(os.path.join("app", "dns_refresh.py"))
-
     print("Workflow completed successfully.")
+
+    # Call app\dns_refresh.py after main script completes
+    subprocess.call([sys.executable, os.path.join("app", "dns_refresh.py")])
 
 def display_next_run_time(interval):
     """Output the next run time"""
