@@ -1,12 +1,7 @@
-import csv
-import ipaddress
 import os
 import platform
-import shlex
 import subprocess
 import time
-import geoip2.database
-import requests
 from dotenv import load_dotenv
 
 def get_script_dir():
@@ -19,38 +14,7 @@ def load_env_variables():
     else:
         print("没有找到 app.env 文件，直接运行 CloudflareST")
 
-def get_ips():
-    cdn = 'cloudflare'  # 固定使用 cloudflare
-    countryList = os.getenv('country_list', 'JP,KR,SG,US,HK,None').split(',')
-    CloudflareSTDir = os.path.join(get_script_dir(), 'CloudflareST_windows_amd64') if platform.system() == "Windows" else os.path.join(get_script_dir(), 'CloudflareST_linux_amd64')
-
-    print(time.strftime("%Y/%m/%d %H:%M:%S", time.localtime()), '获取' + cdn + '最新IP')
-    cf_online_url = 'https://api.cloudflare.com/client/v4/ips'
-    response = requests.get(cf_online_url, headers={'Content-Type': 'application/json'})
-    ips_json_ip = response.json()['result']['ipv4_cidrs']
-
-    ip_list = []
-    try:
-        os.remove(CloudflareSTDir + '/ip.txt')
-        os.remove(CloudflareSTDir + '/result.csv')
-    except FileNotFoundError:
-        pass
-    except Exception as e:
-        print(e)
-
-    print(time.strftime("%Y/%m/%d %H:%M:%S", time.localtime()), '过滤' + '、'.join(str(x) for x in countryList) + '国家地区IP')
-    with geoip2.database.Reader(os.path.join(get_script_dir(), '..', 'config', 'GeoLite2-Country.mmdb')) as reader:
-        for ips in ips_json_ip:
-            ip = ipaddress.ip_network(ips)[0]
-            response = reader.country(ip)
-            if response.country.iso_code in countryList:
-                ip_list = ip_list + [ips]
-
-    # 更新IP列表至文件
-    with open(CloudflareSTDir + '/ip.txt', 'w') as f:
-        for ip in ip_list:
-            f.write(ip + '\r\n')
-
+# 根据配置构建 CloudflareST 的命令行参数
 def build_cst_command():
     cst_n = os.getenv('cst_n', '200')  # 延迟测速线程
     cst_t = os.getenv('cst_t', '4')    # 延迟测速次数
@@ -93,36 +57,31 @@ def build_cst_command():
     
     return cst_command
 
-def get_fastest_ip():
-    CloudflareSTDir = os.path.join(get_script_dir(), 'CloudflareST_windows_amd64') if platform.system() == "Windows" else os.path.join(get_script_dir(), 'CloudflareST_linux_amd64')
-    cst_executable = os.path.join(CloudflareSTDir, 'CloudflareST.exe') if platform.system() == "Windows" else os.path.join(CloudflareSTDir, 'CloudflareST')
-    
-    if not os.path.exists(cst_executable):
-        raise FileNotFoundError(f"CloudflareST 可执行文件不存在: {cst_executable}")
-
-    if platform.system() != "Windows":
-        os.chmod(cst_executable, 0o755)
-
-    print(f"可执行文件路径: {cst_executable}")
-
-    stUrl = os.getenv('stUrl', 'https://speed.cloudflare.com/__down?bytes=200000000')
-    sturl_none_shell = [cst_executable, '-f', 'ip.txt', '-tl', '150', '-p', '0', '-dd', '-o', 'result.csv']
-    sturl_shell = [cst_executable, '-f', 'ip.txt', '-tl', '150', '-p', '0', '-url', stUrl, '-o', 'result.csv']
-
-    print(f"Executing command: {sturl_none_shell if stUrl == 'https://speed.cloudflare.com/__down?bytes=200000000' else sturl_shell}")
-
-    if stUrl == 'https://speed.cloudflare.com/__down?bytes=200000000':
-        st = subprocess.Popen(sturl_none_shell, cwd=CloudflareSTDir, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    else:
-        st = subprocess.Popen(sturl_shell, cwd=CloudflareSTDir, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-    output, error = st.communicate()
-    st.wait()
-
+# 运行 CloudflareST
 def run_cloudflare_st():
-    load_env_variables()
-    get_ips()
-    get_fastest_ip()
+    cloudflare_st_dir = os.path.join(get_script_dir(), '..', 'config', 'CloudflareST_windows_amd64')
+    cst_executable = os.path.join(cloudflare_st_dir, 'CloudflareST.exe') if platform.system() == "Windows" else os.path.join(cloudflare_st_dir, 'CloudflareST')
+
+    if not os.path.exists(cst_executable):
+        print(f"CloudflareST 可执行文件不存在: {cst_executable}")
+        return
+
+    cst_command = build_cst_command()
+
+    if not cst_command:
+        print(f"没有配置参数，直接运行: {cst_executable}")
+        subprocess.Popen([cst_executable], cwd=cloudflare_st_dir)
+    else:
+        subprocess.Popen([cst_executable] + cst_command, cwd=cloudflare_st_dir)
+
+    # 检查 result.csv 是否生成
+    result_file_path = os.path.join(cloudflare_st_dir, 'result.csv')
+
+    while not os.path.exists(result_file_path):
+        print("等待 result.csv 文件生成...")
+        time.sleep(2)  # 每隔2秒检查一次
+
+    print("检测到 result.csv 文件，脚本结束。")
 
 def main():
     run_cloudflare_st()
