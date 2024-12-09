@@ -10,5 +10,6 @@ services:
     volumes:
       - ./config:/app/config
     environment:
+      - TZ=Asia/Shanghai
       - PYTHONUNBUFFERED=1
     entrypoint: ["python", "main.py"]
