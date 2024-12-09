@@ -3,6 +3,7 @@ version: '3.8'
 services:
   cfbestdomain:
     image: xinmeng96/cfbestdomain:latest
+    container_name: cfbestdomain
     build:
       context: .
       dockerfile: Dockerfile
