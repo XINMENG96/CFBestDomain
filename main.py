@@ -10,7 +10,7 @@ from croniter import croniter
 # Load environment variables
 def load_env_variables():
     env_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config", "app.env")
-    if (os.path.exists(env_file)):
+    if os.path.exists(env_file):
         load_dotenv(env_file)
     else:
         print("警告: app.env 文件未找到。使用默认配置。")
@@ -19,7 +19,7 @@ def load_env_variables():
 def get_interval():
     try:
         interval_minutes = os.getenv("INTERVAL_MINUTES", None)
-        if (interval_minutes is not None):
+        if interval_minutes is not None:
             interval = int(interval_minutes) * 60  # Convert to seconds
             print(f"任务间隔时间（秒）: {interval}")
             return interval
@@ -41,15 +41,13 @@ def schedule_task(cron_expr):
     base_time = datetime.now()
     iter = croniter(cron_expr, base_time)
     next_run = iter.get_next(datetime)
-    
     # Immediately execute once
     main()
     display_next_run_time(next_run)
-    
     # Continue to run according to the CRON_EXPR
     while True:
         now = datetime.now()
-        if (now >= next_run):
+        if now >= next_run:
             main()
             next_run = iter.get_next(datetime)
             display_next_run_time(next_run)
@@ -98,11 +96,11 @@ if __name__ == "__main__":
     # Get the cron expression
     cron_expr = os.getenv("CRON_EXPR", None)
 
-    if (platform.system() == 'Windows'):
+    if platform.system() == 'Windows':
         # Get interval in seconds from INTERVAL_MINUTES
         interval = get_interval()
 
-        if (interval):
+        if interval:
             print(f"每 {interval // 60} 分钟运行一次")
             # Execute tasks at the specified interval
             while True:
@@ -116,14 +114,14 @@ if __name__ == "__main__":
             main()
     else:
         # For Linux, prioritize CRON_EXPR over INTERVAL_MINUTES
-        if (cron_expr):
+        if cron_expr:
             print(f"使用 cron 表达式调度任务: {cron_expr}")
             schedule_task(cron_expr)
         else:
             # Get interval in seconds from INTERVAL_MINUTES
             interval = get_interval()
 
-            if (interval):
+            if interval:
                 print(f"每 {interval // 60} 分钟运行一次")
                 # Execute tasks at the specified interval
                 while True:
