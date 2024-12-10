@@ -30,8 +30,5 @@ COPY . .
 # 设置环境变量
 ENV PYTHONUNBUFFERED=1
 
-# 复制 crontab 文件到容器中
-COPY crontab /etc/crontabs/root
-
-# 启动 cron 服务和主脚本
-CMD ["sh", "-c", "crond && python3 main.py"]
+# 启动主脚本
+CMD ["python3", "main.py"]
