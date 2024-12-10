@@ -7,8 +7,11 @@ def get_script_dir():
 # 生成默认的 app.env 文件模板
 def create_default_env(env_file):
     default_env_content = """
-# 每2小时执行一次
-# INTERVAL_MINUTES=120
+# 定时运行（单位：分钟）
+# INTERVAL_MINUTES=2880
+# Cron定时运行（仅支持Linux，优先执行）
+# CRON_EXPR=* * */2 * *
+
 # Cloudflare API 配置
 # Cloudflare API 邮箱
 # email=your-email@example.com
