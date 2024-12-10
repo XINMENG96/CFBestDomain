@@ -14,7 +14,11 @@ RUN apk update && apk add --no-cache \
     tar \
     build-base \
     libffi-dev \
-    openssl-dev
+    openssl-dev \
+    busybox-suid \
+    shadow \
+    bash \
+    cronie
 
 # 安装 Python 包
 COPY requirements.txt .
@@ -26,5 +30,8 @@ COPY . .
 # 设置环境变量
 ENV PYTHONUNBUFFERED=1
 
-# 运行主脚本
-ENTRYPOINT ["python3", "main.py"]
+# 复制 crontab 文件到容器中
+COPY crontab /etc/crontabs/root
+
+# 启动 cron 服务和主脚本
+CMD ["sh", "-c", "crond && python3 main.py"]
